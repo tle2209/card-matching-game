@@ -5,6 +5,7 @@ class GameProvider extends ChangeNotifier {
   List<CardModel> _cards = [];
   CardModel? _firstSelectedCard;
   CardModel? _secondSelectedCard;
+  bool _isChecking = false;
 
   GameProvider() {
     _initializeCards();
@@ -16,7 +17,10 @@ class GameProvider extends ChangeNotifier {
     List<String> images = [
       'assets/images/apple.png', 'assets/images/apple.png',
       'assets/images/banana.png', 'assets/images/banana.png',
-      // Add more pairs
+      'assets/images/cherry.png', 'assets/images/cherry.png',
+      'assets/images/grape.png', 'assets/images/grape.png',
+      'assets/images/orange.png', 'assets/images/orange.png',
+      'assets/images/strawberry.png', 'assets/images/strawberry.png',
     ];
     images.shuffle();
     _cards = images.map((img) => CardModel(frontImage: img)).toList();
@@ -24,14 +28,18 @@ class GameProvider extends ChangeNotifier {
   }
 
   void flipCard(CardModel card) {
+    if (_isChecking || card.isFaceUp || card.isMatched) return;
+
+    card.isFaceUp = true;
+    notifyListeners();
+
     if (_firstSelectedCard == null) {
       _firstSelectedCard = card;
     } else {
       _secondSelectedCard = card;
+      _isChecking = true;
       _checkMatch();
     }
-    card.isFaceUp = true;
-    notifyListeners();
   }
 
   void _checkMatch() {
@@ -48,6 +56,8 @@ class GameProvider extends ChangeNotifier {
       }
       _firstSelectedCard = null;
       _secondSelectedCard = null;
+      _isChecking = false;
     }
+    notifyListeners();
   }
 }

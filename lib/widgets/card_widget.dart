@@ -26,7 +26,7 @@ class _CardWidgetState extends State<CardWidget> with SingleTickerProviderStateM
   }
 
   @override
-  void didUpdateWidget(CardWidget oldWidget) {
+  void didUpdateWidget(covariant CardWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.card.isFaceUp) {
       _controller.forward();
@@ -42,7 +42,7 @@ class _CardWidgetState extends State<CardWidget> with SingleTickerProviderStateM
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {
-          final rotation = _animation.value * 3.14; // Convert to radians for rotation effect
+          final rotation = _animation.value * 3.14;
           return Transform(
             alignment: Alignment.center,
             transform: Matrix4.rotationY(rotation),
