@@ -22,7 +22,10 @@ class GameScreen extends StatelessWidget {
           return CardWidget(
             card: gameProvider.cards[index],
             onTap: () {
-              gameProvider.flipCard(gameProvider.cards[index]);
+              if (!gameProvider.cards[index].isFaceUp &&
+                  !gameProvider.cards[index].isMatched) {
+                gameProvider.flipCard(gameProvider.cards[index]);
+              }
             },
           );
         },

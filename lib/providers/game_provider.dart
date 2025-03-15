@@ -5,7 +5,7 @@ class GameProvider extends ChangeNotifier {
   List<CardModel> _cards = [];
   CardModel? _firstSelectedCard;
   CardModel? _secondSelectedCard;
-  bool _isChecking = false;
+  bool _isProcessing = false;
 
   GameProvider() {
     _initializeCards();
@@ -18,9 +18,6 @@ class GameProvider extends ChangeNotifier {
       'assets/images/apple.png', 'assets/images/apple.png',
       'assets/images/banana.png', 'assets/images/banana.png',
       'assets/images/cherry.png', 'assets/images/cherry.png',
-      'assets/images/grape.png', 'assets/images/grape.png',
-      'assets/images/orange.png', 'assets/images/orange.png',
-      'assets/images/strawberry.png', 'assets/images/strawberry.png',
     ];
     images.shuffle();
     _cards = images.map((img) => CardModel(frontImage: img)).toList();
@@ -28,7 +25,7 @@ class GameProvider extends ChangeNotifier {
   }
 
   void flipCard(CardModel card) {
-    if (_isChecking || card.isFaceUp || card.isMatched) return;
+    if (_isProcessing || card.isFaceUp || card.isMatched) return;
 
     card.isFaceUp = true;
     notifyListeners();
@@ -37,27 +34,34 @@ class GameProvider extends ChangeNotifier {
       _firstSelectedCard = card;
     } else {
       _secondSelectedCard = card;
-      _isChecking = true;
       _checkMatch();
     }
   }
 
   void _checkMatch() {
     if (_firstSelectedCard != null && _secondSelectedCard != null) {
+      _isProcessing = true;
+
       if (_firstSelectedCard!.frontImage == _secondSelectedCard!.frontImage) {
+        // Match found: Keep them face-up
         _firstSelectedCard!.isMatched = true;
         _secondSelectedCard!.isMatched = true;
       } else {
+        // No match: Flip back after 1 second
         Future.delayed(Duration(seconds: 1), () {
           _firstSelectedCard!.isFaceUp = false;
           _secondSelectedCard!.isFaceUp = false;
           notifyListeners();
         });
       }
-      _firstSelectedCard = null;
-      _secondSelectedCard = null;
-      _isChecking = false;
+
+      // Reset selection after checking
+      Future.delayed(Duration(milliseconds: 1000), () {
+        _firstSelectedCard = null;
+        _secondSelectedCard = null;
+        _isProcessing = false;
+        notifyListeners();
+      });
     }
-    notifyListeners();
   }
 }

@@ -19,19 +19,19 @@ class _CardWidgetState extends State<CardWidget> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
     _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
   }
 
   @override
-  void didUpdateWidget(covariant CardWidget oldWidget) {
+  void didUpdateWidget(CardWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.card.isFaceUp) {
-      _controller.forward();
+      _controller.forward(); // Flip to face-up
     } else {
-      _controller.reverse();
+      _controller.reverse(); // Flip to face-down
     }
   }
 
@@ -43,12 +43,14 @@ class _CardWidgetState extends State<CardWidget> with SingleTickerProviderStateM
         animation: _animation,
         builder: (context, child) {
           final rotation = _animation.value * 3.14;
+          final isFlipped = _animation.value > 0.5;
+
           return Transform(
             alignment: Alignment.center,
             transform: Matrix4.rotationY(rotation),
-            child: _animation.value > 0.5
-                ? Image.asset(widget.card.frontImage, fit: BoxFit.cover)
-                : Image.asset('assets/images/card_back.png', fit: BoxFit.cover),
+            child: isFlipped
+                ? Image.asset(widget.card.frontImage, fit: BoxFit.cover) // Show front image
+                : Image.asset('assets/images/card_back.png', fit: BoxFit.cover), // Show back image
           );
         },
       ),
